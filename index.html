@@ -212,26 +212,24 @@
         }
 
 		.qr-code {
-		    position: fixed;
-		    bottom: 20px;
-		    right: 20px;
+		    margin-top: 30px;
 		    background: white;
-		    padding: 10px;
+		    padding: 15px;
 		    border-radius: 10px;
-		    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-		    z-index: 100;
+		    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		    text-align: center;
 		}
 		
 		.qr-code img {
 		    display: block;
-		    width: 100px;
-		    height: 100px;
+		    width: 120px;
+		    height: 120px;
+		    margin: 0 auto;
 		}
 		
 		.qr-code p {
-		    margin-top: 5px;
-		    font-size: 11px;
-		    text-align: center;
+		    margin-top: 10px;
+		    font-size: 14px;
 		    color: #7f8c8d;
 		}
     </style>
@@ -250,6 +248,12 @@
                 <button class="color-btn" style="background-color: #2ecc71;" onclick="selectColor('green')">Grün</button>
                 <button class="color-btn" style="background-color: #800080;" onclick="selectColor('purple')">Lila</button>
             </div>
+			
+			<!-- QR Code zum Teilen -->
+			<div class="qr-code">
+			    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://danderdirty.github.io/adelverpflichtet/" alt="QR Code">
+			    <p>Scannen & mitspielen</p>
+			</div>
         </div>
         
         <!-- Ortswahl -->
@@ -302,12 +306,6 @@
 	        <p id="notification-message"></p>
 	        <button class="close-modal" onclick="closeNotificationModal()">OK</button>
 	    </div>
-	</div>
-
-	<!-- QR Code zum Teilen -->
-	<div class="qr-code">
-	    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://danderdirty.github.io/adelverpflichtet/" alt="QR Code">
-	    <p>Scannen & mitspielen</p>
 	</div>
 
     <script>
