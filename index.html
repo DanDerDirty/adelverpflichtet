@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adel verpflichtet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            min-height: 100vh;
+            transition: background-color 0.3s;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .color-selection, .location-selection, .location-reveal, .action-selection, .post-action {
+            display: none;
+        }
+        
+        .color-selection.active, .location-selection.active, .location-reveal.active, .action-selection.active, .post-action.active {
+            display: block;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .color-btn {
+            padding: 40px 20px;
+            border: 3px solid #2c3e50;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .color-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .location-btn, .action-btn, .check-value-btn, .thief-value-btn {
+            width: 100%;
+            padding: 20px;
+            margin: 10px 0;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            background: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #2c3e50;
+        }
+        
+        .location-btn:hover, .action-btn:hover, .check-value-btn:hover, .thief-value-btn:hover {
+            background: #ecf0f1;
+            transform: scale(1.02);
+        }
+        
+        .action-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #bdc3c7;
+        }
+        
+        .action-btn.disabled:hover {
+            transform: none;
+            background: #bdc3c7;
+        }
+        
+        .back-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            border: 2px solid #7f8c8d;
+            border-radius: 8px;
+            background: white;
+            color: #7f8c8d;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .back-btn:hover {
+            background: #ecf0f1;
+        }
+        
+        .new-round-btn {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            background: #27ae60;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .new-round-btn:hover {
+            background: #229954;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .post-action-options {
+            margin-top: 20px;
+        }
+        
+        .option-group {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+        }
+        
+        .option-group h4 {
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+        
+        .close-modal {
+            margin-top: 20px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎩 Adel verpflichtet 🎩</h1>
+        
+        <!-- Farbauswahl -->
+        <div class="color-selection active">
+            <h2>Wähle deine Farbe</h2>
+            <div class="color-grid">
+                <button class="color-btn" style="background-color: #e74c3c;" onclick="selectColor('red')">Rot</button>
+                <button class="color-btn" style="background-color: #3498db;" onclick="selectColor('blue')">Blau</button>
+                <button class="color-btn" style="background-color: #f39c12;" onclick="selectColor('yellow')">Gelb</button>
+                <button class="color-btn" style="background-color: #2ecc71;" onclick="selectColor('green')">Grün</button>
+            </div>
+        </div>
+        
+        <!-- Ortswahl -->
+        <div class="location-selection">
+            <h2>Wähle deinen Ort</h2>
+            <button class="location-btn" onclick="selectLocation('castle')">🏰 Schloss</button>
+            <button class="location-btn" onclick="selectLocation('auction')">🔨 Auktionshaus</button>
+        </div>
+        
+        <!-- Ort zeigen (ohne Aktionen) -->
+        <div class="location-reveal">
+            <h2>Gewählter Ort</h2>
+            <p id="chosen-location" style="font-size: 48px; text-align: center; margin: 30px 0;"></p>
+            <button class="location-btn" onclick="showActions()">Aktion wählen</button>
+            <button class="back-btn" onclick="goBackFromReveal()">← Zurück zur Ortswahl</button>
+        </div>
+        
+        <!-- Aktionswahl -->
+        <div class="action-selection">
+            <h2 id="action-title">Wähle deine Aktion</h2>
+            <div id="actions-container"></div>
+            <button class="back-btn" onclick="goBackToLocation()">← Zurück zur Ortswahl</button>
+        </div>
+        
+        <!-- Nach der Aktion -->
+        <div class="post-action">
+            <h2>Aktion ausgewählt</h2>
+            <p id="selected-action-text" style="font-size: 48px; text-align: center; margin: 30px 0;"></p>
+            
+            <div class="post-action-options" id="post-action-options"></div>
+            
+            <button class="back-btn" onclick="goBackToAction()">← Andere Aktion wählen</button>
+            <button class="new-round-btn" onclick="newRound()">Neue Runde starten</button>
+        </div>
+    </div>
+    
+    <!-- Modal für Scheck/Dieb-Auswahl -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <div id="modal-options"></div>
+            <button class="close-modal" onclick="closeModal()">Schließen</button>
+        </div>
+    </div>
+
+    <script>
+        const COLORS = {
+            red: { bg: '#e74c3c', checks: [8000, 10000, 14000, 18000], thieves: [1, 3] },
+            blue: { bg: '#3498db', checks: [7000, 11000, 13000, 19000], thieves: [2, 4] },
+            yellow: { bg: '#f39c12', checks: [6000, 12000, 15000, 17000], thieves: [1, 4] },
+            green: { bg: '#2ecc71', checks: [9000, 11000, 12000, 18000], thieves: [2, 3] }
+        };
+        
+        let gameState = {
+            playerColor: null,
+            currentLocation: null,
+            availableChecks: [],
+            availableThieves: [],
+            lostThieves: []
+        };
+        
+        function selectColor(color) {
+            gameState.playerColor = color;
+            gameState.availableChecks = [...COLORS[color].checks];
+            gameState.availableThieves = [...COLORS[color].thieves];
+            gameState.lostThieves = [];
+            
+            document.body.style.backgroundColor = COLORS[color].bg;
+            
+            document.querySelector('.color-selection').classList.remove('active');
+            document.querySelector('.location-selection').classList.add('active');
+        }
+        
+        function selectLocation(location) {
+            gameState.currentLocation = location;
+            
+            const locationText = location === 'castle' ? '🏰 Schloss' : '🔨 Auktionshaus';
+            document.getElementById('chosen-location').textContent = locationText;
+            
+            document.querySelector('.location-selection').classList.remove('active');
+            document.querySelector('.location-reveal').classList.add('active');
+        }
+        
+        function showActions() {
+            const actionsContainer = document.getElementById('actions-container');
+            actionsContainer.innerHTML = '';
+            
+            if (gameState.currentLocation === 'castle') {
+                actionsContainer.innerHTML += '<button class="action-btn" onclick="selectAction(\'exhibition\')">🖼️ Ausstellung</button>';
+                
+                gameState.availableThieves.forEach(value => {
+                    actionsContainer.innerHTML += `<button class="action-btn" onclick="selectAction('thief', ${value})">🦹 Dieb (Wert ${value})</button>`;
+                });
+                
+                actionsContainer.innerHTML += '<button class="action-btn" onclick="selectAction(\'detective\')">🕵️ Detektiv</button>';
+            } else {
+                gameState.availableChecks.forEach(value => {
+                    actionsContainer.innerHTML += `<button class="action-btn" onclick="selectAction('check', ${value})">💰 Scheck (${value.toLocaleString('de-DE')})</button>`;
+                });
+                
+                gameState.availableThieves.forEach(value => {
+                    actionsContainer.innerHTML += `<button class="action-btn" onclick="selectAction('thief', ${value})">🦹 Dieb (Wert ${value})</button>`;
+                });
+            }
+            
+            document.querySelector('.location-reveal').classList.remove('active');
+            document.querySelector('.action-selection').classList.add('active');
+        }
+        
+        function goBackFromReveal() {
+            document.querySelector('.location-reveal').classList.remove('active');
+            document.querySelector('.location-selection').classList.add('active');
+        }
+        
+        function selectAction(action, value = null) {
+            const postActionOptions = document.getElementById('post-action-options');
+            postActionOptions.innerHTML = '';
+            
+            let actionText = '';
+            
+            if (action === 'exhibition') {
+                actionText = '🖼️ Ausstellung';
+            } else if (action === 'detective') {
+                actionText = '🕵️ Detektiv';
+            } else if (action === 'check') {
+                actionText = `💰 Scheck (${value.toLocaleString('de-DE')})`;
+                postActionOptions.innerHTML = `
+                    <div class="option-group">
+                        <h4>Scheck abgeben?</h4>
+                        <button class="action-btn" onclick="giveAwayCheck(${value})">Scheck ${value.toLocaleString('de-DE')} abgeben</button>
+                    </div>
+                `;
+            } else if (action === 'thief') {
+                actionText = `🦹 Dieb (Wert ${value})`;
+                
+                if (gameState.currentLocation === 'castle') {
+                    postActionOptions.innerHTML = `
+                        <div class="option-group">
+                            <h4>Wurde der Dieb erwischt?</h4>
+                            <button class="action-btn" onclick="loseThief(${value})">Dieb Wert ${value} abgeben</button>
+                        </div>
+                    `;
+                } else {
+                    postActionOptions.innerHTML = `
+                        <div class="option-group">
+                            <h4>Scheck erbeuten</h4>
+                            <button class="action-btn" onclick="showCheckSelection()">Scheck auswählen</button>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Option zum Zurückgewinnen von Dieben
+            if (gameState.lostThieves.length > 0) {
+                postActionOptions.innerHTML += `
+                    <div class="option-group">
+                        <h4>Diebe zurückerhalten</h4>
+                        <button class="action-btn" onclick="showThiefRecovery()">Diebe zurückholen</button>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('selected-action-text').textContent = actionText;
+            
+            document.querySelector('.action-selection').classList.remove('active');
+            document.querySelector('.post-action').classList.add('active');
+        }
+        
+        function giveAwayCheck(value) {
+            const index = gameState.availableChecks.indexOf(value);
+            if (index > -1) {
+                gameState.availableChecks.splice(index, 1);
+                alert(`Scheck ${value.toLocaleString('de-DE')} wurde abgegeben.`);
+                newRound();
+            }
+        }
+        
+        function loseThief(value) {
+            const index = gameState.availableThieves.indexOf(value);
+            if (index > -1) {
+                gameState.availableThieves.splice(index, 1);
+                gameState.lostThieves.push(value);
+                alert(`Dieb Wert ${value} wurde erwischt und abgegeben.`);
+                newRound();
+            }
+        }
+        
+        function showCheckSelection() {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalOptions = document.getElementById('modal-options');
+            
+            modalTitle.textContent = 'Welchen Scheck möchtest du erbeuten?';
+            modalOptions.innerHTML = '';
+            
+            Object.keys(COLORS).forEach(color => {
+                COLORS[color].checks.forEach(value => {
+                    const colorName = { red: 'Rot', blue: 'Blau', yellow: 'Gelb', green: 'Grün' }[color];
+                    modalOptions.innerHTML += `
+                        <button class="check-value-btn" onclick="gainCheck(${value})" style="border-left: 5px solid ${COLORS[color].bg}">
+                            ${colorName}: ${value.toLocaleString('de-DE')}
+                        </button>
+                    `;
+                });
+            });
+            
+            modal.classList.add('active');
+        }
+        
+        function gainCheck(value) {
+            if (!gameState.availableChecks.includes(value)) {
+                gameState.availableChecks.push(value);
+                alert(`Scheck ${value.toLocaleString('de-DE')} erbeutet!`);
+            }
+            closeModal();
+            newRound();
+        }
+        
+        function showThiefRecovery() {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalOptions = document.getElementById('modal-options');
+            
+            modalTitle.textContent = 'Welche Diebe zurückholen?';
+            modalOptions.innerHTML = '';
+            
+            gameState.lostThieves.forEach(value => {
+                modalOptions.innerHTML += `
+                    <button class="thief-value-btn" onclick="recoverThief(${value})">
+                        Dieb Wert ${value} zurückholen
+                    </button>
+                `;
+            });
+            
+            modal.classList.add('active');
+        }
+        
+        function recoverThief(value) {
+            const index = gameState.lostThieves.indexOf(value);
+            if (index > -1) {
+                gameState.lostThieves.splice(index, 1);
+                gameState.availableThieves.push(value);
+                alert(`Dieb Wert ${value} wurde zurückgeholt!`);
+            }
+            closeModal();
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        function goBackToLocation() {
+            document.querySelector('.action-selection').classList.remove('active');
+            document.querySelector('.location-reveal').classList.add('active');
+        }
+        
+        function goBackToAction() {
+            document.querySelector('.post-action').classList.remove('active');
+            document.querySelector('.action-selection').classList.add('active');
+        }
+        
+        function newRound() {
+            gameState.currentLocation = null;
+            
+            document.querySelector('.post-action').classList.remove('active');
+            document.querySelector('.location-selection').classList.add('active');
+        }
+    </script>
+</body>
+</html>
