@@ -254,6 +254,8 @@
 			    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://danderdirty.github.io/adelverpflichtet/" alt="QR Code">
 			    <p>Scannen & mitspielen</p>
 			</div>
+			
+			<button class="back-btn" onclick="resetGame()" style="margin-top: 20px;">🔄 Spiel zurücksetzen</button>
         </div>
         
         <!-- Ortswahl -->
@@ -330,6 +332,7 @@
             gameState.availableChecks = [...COLORS[color].checks];
             gameState.availableThieves = [...COLORS[color].thieves];
             gameState.lostThieves = [];
+			saveGameState();
             
             document.body.style.backgroundColor = COLORS[color].bg;
             
@@ -436,6 +439,7 @@
             const index = gameState.availableChecks.indexOf(value);
             if (index > -1) {
                 gameState.availableChecks.splice(index, 1);
+				saveGameState();
                 showNotification('Scheck abgegeben', `Scheck ${value.toLocaleString('de-DE')} wurde abgegeben.`);
                 newRound();
             }
@@ -446,6 +450,7 @@
             if (index > -1) {
                 gameState.availableThieves.splice(index, 1);
                 gameState.lostThieves.push(value);
+				saveGameState();
                 showNotification('Dieb verloren', `Dieb Wert ${value} wurde erwischt und abgegeben.`);
                 newRound();
             }
@@ -476,6 +481,7 @@
         function gainCheck(value) {
             if (!gameState.availableChecks.includes(value)) {
                 gameState.availableChecks.push(value);
+				saveGameState();
                 showNotification('Scheck erbeutet', `Scheck ${value.toLocaleString('de-DE')} erbeutet!`);
             }
             closeModal();
@@ -506,6 +512,7 @@
             if (index > -1) {
                 gameState.lostThieves.splice(index, 1);
                 gameState.availableThieves.push(value);
+				saveGameState();
                 showNotification('Dieb zurückgeholt', `Dieb Wert ${value} wurde zurückgeholt!`);
             }
             closeModal();
@@ -541,6 +548,39 @@
 		function closeNotificationModal() {
 		    document.getElementById('notification-modal').classList.remove('active');
 		}
+
+		function saveGameState() {
+		    localStorage.setItem('adelVerpflichtet', JSON.stringify(gameState));
+		}
+		
+		function loadGameState() {
+		    const saved = localStorage.getItem('adelVerpflichtet');
+		    if (saved) {
+		        const loaded = JSON.parse(saved);
+		        if (loaded.playerColor) {
+		            gameState = loaded;
+		            document.body.style.backgroundColor = COLORS[gameState.playerColor].bg;
+		            
+		            //document.querySelector('.color-selection').classList.remove('active');
+		            //document.querySelector('.location-selection').classList.add('active');
+		            
+		            return true;
+		        }
+		    }
+		    return false;
+		}
+
+		function resetGame() {
+		    if (confirm('Möchtest du wirklich das Spiel zurücksetzen?')) {
+		        localStorage.removeItem('adelVerpflichtet');
+		        location.reload();
+		    }
+		}
+		
+		// Beim Laden der Seite prüfen, ob ein gespeicherter Spielstand existiert
+		window.addEventListener('DOMContentLoaded', () => {
+		    loadGameState();
+		});
     </script>
 </body>
 </html>
