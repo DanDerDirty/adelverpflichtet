@@ -328,17 +328,23 @@
         };
         
         function selectColor(color) {
-            gameState.playerColor = color;
-            gameState.availableChecks = [...COLORS[color].checks];
-            gameState.availableThieves = [...COLORS[color].thieves];
-            gameState.lostThieves = [];
-			saveGameState();
-            
-            document.body.style.backgroundColor = COLORS[color].bg;
-            
-            document.querySelector('.color-selection').classList.remove('active');
-            document.querySelector('.location-selection').classList.add('active');
-        }
+		    // Nur setzen wenn noch keine Farbe gewählt oder wenn neu gestartet
+		    if (!gameState.playerColor) {
+		        gameState.playerColor = color;
+		        gameState.availableChecks = [...COLORS[color].checks];
+		        gameState.availableThieves = [...COLORS[color].thieves];
+		        gameState.lostThieves = [];
+		    } else {
+		        // Farbe wurde bereits gewählt, nur Farbe aktualisieren
+		        gameState.playerColor = color;
+		    }
+		    
+		    document.body.style.backgroundColor = COLORS[color].bg;
+		    saveGameState();
+		    
+		    document.querySelector('.color-selection').classList.remove('active');
+		    document.querySelector('.location-selection').classList.add('active');
+		}
         
         function selectLocation(location) {
             gameState.currentLocation = location;
@@ -554,20 +560,21 @@
 		}
 		
 		function loadGameState() {
-		    const saved = localStorage.getItem('adelVerpflichtet');
-		    if (saved) {
-		        const loaded = JSON.parse(saved);
-		        if (loaded.playerColor) {
-		            gameState = loaded;
-		            document.body.style.backgroundColor = COLORS[gameState.playerColor].bg;
-		            
-		            //document.querySelector('.color-selection').classList.remove('active');
-		            //document.querySelector('.location-selection').classList.add('active');
-		            
-		            return true;
-		        }
-		    }
-		    return false;
+			const saved = localStorage.getItem('adelVerpflichtet');
+			if (saved) {
+				const loaded = JSON.parse(saved);
+				if (loaded.playerColor) {
+					gameState = loaded;
+					document.body.style.backgroundColor = COLORS[gameState.playerColor].bg;
+					
+					// Direkt zur Ortswahl springen wenn Farbe bereits gewählt
+					document.querySelector('.color-selection').classList.remove('active');
+					document.querySelector('.location-selection').classList.add('active');
+					
+					return true;
+				}
+			}
+			return false;
 		}
 
 		function resetGame() {
