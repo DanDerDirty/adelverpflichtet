@@ -210,6 +210,30 @@
             cursor: pointer;
             width: 100%;
         }
+
+		.qr-code {
+		    position: fixed;
+		    bottom: 20px;
+		    right: 20px;
+		    background: white;
+		    padding: 10px;
+		    border-radius: 10px;
+		    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		    z-index: 100;
+		}
+		
+		.qr-code img {
+		    display: block;
+		    width: 100px;
+		    height: 100px;
+		}
+		
+		.qr-code p {
+		    margin-top: 5px;
+		    font-size: 11px;
+		    text-align: center;
+		    color: #7f8c8d;
+		}
     </style>
 </head>
 <body>
@@ -278,6 +302,12 @@
 	        <p id="notification-message"></p>
 	        <button class="close-modal" onclick="closeNotificationModal()">OK</button>
 	    </div>
+	</div>
+
+	<!-- QR Code zum Teilen -->
+	<div class="qr-code">
+	    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=DEINE_URL_HIER" alt="QR Code">
+	    <p>Scannen & mitspielen</p>
 	</div>
 
     <script>
