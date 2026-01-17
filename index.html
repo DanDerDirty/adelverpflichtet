@@ -167,6 +167,21 @@
             margin-bottom: 20px;
             color: #2c3e50;
         }
+
+		.notification-modal .modal-content {
+		    text-align: center;
+		}
+		
+		.notification-modal h3 {
+		    font-size: 24px;
+		    margin-bottom: 15px;
+		}
+		
+		.notification-modal p {
+		    font-size: 18px;
+		    margin-bottom: 25px;
+		    color: #2c3e50;
+		}
         
         .post-action-options {
             margin-top: 20px;
@@ -255,6 +270,15 @@
             <button class="close-modal" onclick="closeModal()">Schließen</button>
         </div>
     </div>
+
+	<!-- Modal für Benachrichtigungen -->
+	<div class="modal notification-modal" id="notification-modal">
+	    <div class="modal-content">
+	        <h3 id="notification-title"></h3>
+	        <p id="notification-message"></p>
+	        <button class="close-modal" onclick="closeNotificationModal()">OK</button>
+	    </div>
+	</div>
 
     <script>
         const COLORS = {
@@ -384,7 +408,7 @@
             const index = gameState.availableChecks.indexOf(value);
             if (index > -1) {
                 gameState.availableChecks.splice(index, 1);
-                alert(`Scheck ${value.toLocaleString('de-DE')} wurde abgegeben.`);
+                showNotification('Scheck abgegeben', `Scheck ${value.toLocaleString('de-DE')} wurde abgegeben.`);
                 newRound();
             }
         }
@@ -394,7 +418,7 @@
             if (index > -1) {
                 gameState.availableThieves.splice(index, 1);
                 gameState.lostThieves.push(value);
-                alert(`Dieb Wert ${value} wurde erwischt und abgegeben.`);
+                showNotification('Dieb verloren', `Dieb Wert ${value} wurde erwischt und abgegeben.`);
                 newRound();
             }
         }
@@ -424,7 +448,7 @@
         function gainCheck(value) {
             if (!gameState.availableChecks.includes(value)) {
                 gameState.availableChecks.push(value);
-                alert(`Scheck ${value.toLocaleString('de-DE')} erbeutet!`);
+                showNotification('Scheck erbeutet', `Scheck ${value.toLocaleString('de-DE')} erbeutet!`);
             }
             closeModal();
             newRound();
@@ -454,7 +478,7 @@
             if (index > -1) {
                 gameState.lostThieves.splice(index, 1);
                 gameState.availableThieves.push(value);
-                alert(`Dieb Wert ${value} wurde zurückgeholt!`);
+                showNotification('Dieb zurückgeholt', `Dieb Wert ${value} wurde zurückgeholt!`);
             }
             closeModal();
         }
@@ -479,6 +503,16 @@
             document.querySelector('.post-action').classList.remove('active');
             document.querySelector('.location-selection').classList.add('active');
         }
+
+		function showNotification(title, message) {
+		    document.getElementById('notification-title').textContent = title;
+		    document.getElementById('notification-message').textContent = message;
+		    document.getElementById('notification-modal').classList.add('active');
+		}
+		
+		function closeNotificationModal() {
+		    document.getElementById('notification-modal').classList.remove('active');
+		}
     </script>
 </body>
 </html>
